@@ -147,9 +147,12 @@ stdenv.mkDerivation rec {
       runHook preInstall
       mkdir -p $out/bin
 
-      install -m755 ${nativeBinary} $out/bin/.claude-unwrapped
+      # Keep the real binary named "claude" (in libexec) so the running process
+      # shows up as "claude" in ps/Activity Monitor instead of ".claude-unwrapped".
+      mkdir -p $out/libexec/claude-code
+      install -m755 ${nativeBinary} $out/libexec/claude-code/claude
 
-      makeBinaryWrapper $out/bin/.claude-unwrapped $out/bin/${selected.binName} \
+      makeBinaryWrapper $out/libexec/claude-code/claude $out/bin/${selected.binName} \
         --set DISABLE_AUTOUPDATER 1 \
         --set DISABLE_INSTALLATION_CHECKS 1 \
         --set USE_BUILTIN_RIPGREP 0 \
